@@ -25,7 +25,8 @@ class IBGatewayClient(EClient, EWrapper):
 
     def error(self, reqId, errorCode, errorString, advancedOrderDetails=None):
         """Callback for receiving errors from the API."""
-        super().error(reqId, errorCode, errorString, advancedOrderDetails)
+        # The base EWrapper.error method does not accept advancedOrderDetails
+        super().error(reqId, errorCode, errorString)
         print(f"Error ID: {reqId}, Code: {errorCode}, String: {errorString}")
         self._error = (reqId, errorCode, errorString)
         # Set done events on critical errors like connection issues
