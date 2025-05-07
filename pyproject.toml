@@ -6,4 +6,5 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "ibapi>=9.81.1.post1",
+    "pytest>=8.3.5",
 ]
