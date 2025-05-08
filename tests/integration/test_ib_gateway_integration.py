@@ -1,5 +1,5 @@
 import pytest
-from ib_gateway_function import get_portfolio
+from ibapi_functions import get_portfolio
 
 # Define connection parameters for the integration test.
 # Ensure your IB Gateway/TWS is running and configured to accept connections
