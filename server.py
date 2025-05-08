@@ -45,12 +45,9 @@ def get_portfolio_tool(host: str = "127.0.0.1", port: int = 4001, client_id: int
     
     return result
 
-@mcp.resource("ibgateway://status")
-def get_gateway_status() -> str:
+@mcp.resource("ibgateway://{host}/{port}")
+def get_gateway_status(host: str = "127.0.0.1", port: int = 4001) -> str:
     """Get the current status of the IB Gateway connection"""
-    # Use default connection parameters
-    host = "127.0.0.1"
-    port = 4001
     
     # Check if the gateway is connected
     status = check_gateway_connection(host, port)
