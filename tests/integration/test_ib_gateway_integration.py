@@ -1,6 +1,5 @@
 import pytest
 from ibapi_mcp_server.ibapi_functions import get_portfolio
-
 # Define connection parameters for the integration test.
 # Ensure your IB Gateway/TWS is running and configured to accept connections
 # on this host and port with a unique client ID (e.g., 101).
