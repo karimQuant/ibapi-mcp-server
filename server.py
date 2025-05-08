@@ -1,5 +1,10 @@
+import os
 from fastmcp import FastMCP, Context
 from ibapi_functions import get_portfolio, check_gateway_connection
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Create a FastMCP server
 mcp = FastMCP("IB Gateway MCP Server")
@@ -83,18 +88,22 @@ if __name__ == "__main__":
     
     # Check if "sse" is in command line arguments
     if len(sys.argv) > 1 and "sse" in sys.argv:
-        # Run with SSE transport on default port 8000
-        port = 8000
-        # Check if a port is specified (format: "port=XXXX")
+        # Get host and port from environment variables with defaults
+        host = os.getenv("SERVER_HOST", "127.0.0.1")
+        default_port = 8000
+        env_port = os.getenv("SERVER_PORT")
+        port = int(env_port) if env_port else default_port
+        
+        # Check if a port is specified in command line (format: "port=XXXX")
         for arg in sys.argv:
             if arg.startswith("port="):
                 try:
                     port = int(arg.split("=")[1])
                 except (ValueError, IndexError):
-                    print(f"Invalid port format: {arg}. Using default port 8000.")
+                    print(f"Invalid port format: {arg}. Using port {port}.")
         
-        print(f"Starting server with SSE transport on port {port}...")
-        mcp.run(transport="sse", port=port)
+        print(f"Starting server with SSE transport on {host}:{port}...")
+        mcp.run(transport="sse", host=host, port=port)
     else:
         # Default: run with stdio transport
         print("Starting server with stdio transport...")
