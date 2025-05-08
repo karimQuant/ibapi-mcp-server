@@ -43,6 +43,10 @@ def get_portfolio_tool() -> str:
             result += f"- Exchange: {contract['exchange']}\n"
             result += f"- Currency: {contract['currency']}\n"
             result += f"- Position: {position['pos']}\n"
+            result += f"- Maturity (YYYMMDD): {contract['lastTradeDateOrContractMonth']}\n"
+            result += f"- Strike: {contract['strike']}\n"
+            result += f"- Multiplier: {contract['multiplier']}\n"
+            result += f"- Right (Call/Put): {contract['right']}\n"
             result += f"- Average Cost: {position['avgCost']}\n\n"
     else:
         result += "No positions found.\n\n"
