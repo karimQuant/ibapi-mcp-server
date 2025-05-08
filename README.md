@@ -1,25 +1,24 @@
-# Interactive Brokers API Multi-Client Protocol Server
+# Interactive Brokers API FastMCP Server
 
-A server implementation for Interactive Brokers' Client Portal API that allows multiple clients to connect simultaneously.
+A server implementation for Interactive Brokers' API that allows LLMs to interact with your IB account using the Model Context Protocol (MCP).
 
 ## Overview
 
-This project creates a middleware server that connects to Interactive Brokers' Client Portal API and allows multiple client applications to connect to it simultaneously. The server handles authentication, session management, and request proxying to IB's API.
+This project creates a middleware server that connects to Interactive Brokers Gateway and exposes its functionality through the FastMCP framework. This allows LLMs like Claude to interact with your IB account, retrieve portfolio information, and potentially execute trades.
 
 ## Features
 
-- Connect to Interactive Brokers Gateway via REST API
-- Support multiple simultaneous client connections
-- Simple authentication system
-- Request routing and response handling
+- Connect to Interactive Brokers Gateway via the official IB API
+- Support multiple simultaneous client connections through FastMCP
+- Expose IB functionality as MCP tools and resources
 - Connection status monitoring
 - Error handling and logging
 
 ## Prerequisites
 
-- Python 3.8+
+- Python 3.11+
 - Interactive Brokers Gateway installed and running
-- IB account with Client Portal API access enabled
+- IB account with API access enabled
 
 ## Installation
 
@@ -31,34 +30,35 @@ cd ibapi-mcp-server
 
 2. Install dependencies:
 ```
-pip install -r requirements.txt
+pip install -e .
 ```
-
-3. Configure your settings in `config.py`
 
 ## Usage
 
 1. Start your IB Gateway and log in
-2. Run the server:
+2. Run the server using the FastMCP CLI:
 ```
-python server.py
+fastmcp run server.py
 ```
-3. Connect client applications to `http://localhost:8080` (default)
+
+For development with an interactive testing environment:
+```
+fastmcp dev server.py
+```
+
+3. Connect client applications (like Claude Desktop) to the server
 
 ## API Documentation
 
-The MCP (Model Context Protocol) Server provides the following functionality:
+The FastMCP Server provides the following functionality:
 
 ### Available Tools
 
-- **get_portfolio**: Retrieve your current portfolio positions and values
-- **get_trades**: Access your recent trade history and execution details
-- **get_instrument_price**: Get real-time or delayed pricing for financial instruments
-- **get_instrument_info**: Retrieve detailed information about specific financial instruments
+- **get_portfolio_tool**: Retrieve your current portfolio positions and account summary
 
-### Endpoints
+### Resources
 
-Details on how to use these endpoints will be added soon.
+- **ibgateway://{host}/{port}**: Get the current status of the IB Gateway connection
 
 ## License
 

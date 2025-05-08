@@ -1,11 +1,11 @@
 [project]
 name = "ibapi-mcp-server"
 version = "0.1.0"
-description = "Add your description here"
+description = "Interactive Brokers API FastMCP Server"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "ibapi>=9.81.1.post1",
-    "mcp[cli]>=1.7.1",
+    "fastmcp>=2.2.0",
     "pytest>=8.3.5",
 ]

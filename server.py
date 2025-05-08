@@ -1,7 +1,7 @@
-from mcp.server.fastmcp import FastMCP, Context
+from fastmcp import FastMCP, Context
 from ibapi_functions import get_portfolio, check_gateway_connection
 
-# Create an MCP server
+# Create a FastMCP server
 mcp = FastMCP("IB Gateway MCP Server")
 
 @mcp.tool()
