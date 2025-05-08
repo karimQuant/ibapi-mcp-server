@@ -83,6 +83,66 @@ class IBGatewayClient(EClient, EWrapper):
         self._positions_done.set()
 
 
+def check_gateway_connection(host="127.0.0.1", port=4001, clientId=999):
+    """
+    Checks if the IB Gateway/TWS is running and can be connected to.
+    
+    Args:
+        host (str): The host address of the IB Gateway/TWS.
+        port (int): The port of the IB Gateway/TWS.
+        clientId (int): The client ID to use for the connection.
+        
+    Returns:
+        dict: A dictionary containing connection status information:
+              - connected (bool): Whether the connection was successful
+              - message (str): A descriptive message about the connection status
+              - error (str, optional): Error message if connection failed
+    """
+    client = IBGatewayClient()
+    
+    try:
+        print(f"Checking connection to {host}:{port} with client ID {clientId}...")
+        client.connect(host, port, clientId)
+        
+        # Start the client in a separate thread
+        api_thread = threading.Thread(target=client.run)
+        api_thread.start()
+        
+        # Wait for connection to be established
+        connection_successful = client._connected.wait(timeout=5)
+        
+        # Get error if any
+        error_info = client._error
+        
+        # Disconnect after checking
+        client.disconnect()
+        api_thread.join()
+        
+        if connection_successful:
+            return {
+                "connected": True,
+                "message": "Successfully connected to IB Gateway/TWS",
+                "host": host,
+                "port": port
+            }
+        else:
+            error_msg = f"Error: {error_info[2]} (Code: {error_info[1]})" if error_info else "Connection timed out"
+            return {
+                "connected": False,
+                "message": "Failed to connect to IB Gateway/TWS",
+                "error": error_msg,
+                "host": host,
+                "port": port
+            }
+    except Exception as e:
+        return {
+            "connected": False,
+            "message": "Exception occurred while connecting to IB Gateway/TWS",
+            "error": str(e),
+            "host": host,
+            "port": port
+        }
+
 def get_portfolio(host="127.0.0.1", port=4001, clientId=100):
     """
     Queries the IB API to get portfolio details (account summary and positions).

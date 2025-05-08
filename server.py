@@ -1,5 +1,5 @@
 from mcp.server.fastmcp import FastMCP, Context
-from ibapi_functions import get_portfolio
+from ibapi_functions import get_portfolio, check_gateway_connection
 
 # Create an MCP server
 mcp = FastMCP("IB Gateway MCP Server")
@@ -46,26 +46,42 @@ def get_portfolio_tool(host: str = "127.0.0.1", port: int = 4001, client_id: int
     return result
 
 @mcp.resource("ibgateway://status")
-def get_gateway_status() -> str:
-    """Get the current status of the IB Gateway connection"""
-    return """
-    # IB Gateway Status
-    
-    The IB Gateway MCP Server allows you to connect to Interactive Brokers' API
-    and retrieve account information, positions, and execute trades.
-    
-    ## Available Tools
-    
-    - **get_portfolio_tool**: Retrieve your current portfolio positions and account summary
-    
-    ## Connection Parameters
-    
-    - Default Host: 127.0.0.1
-    - Default Port: 4001 (TWS Paper: 7497, TWS Live: 7496)
-    - Default Client ID: 100
-    
-    Make sure your IB Gateway or TWS is running and logged in before using these tools.
+def get_gateway_status(host: str = "127.0.0.1", port: int = 4001) -> str:
     """
+    Get the current status of the IB Gateway connection
+    
+    Args:
+        host: The host address of the IB Gateway/TWS (default: 127.0.0.1)
+        port: The port of the IB Gateway/TWS (default: 4001)
+    """
+    # Check if the gateway is connected
+    status = check_gateway_connection(host, port)
+    
+    # Format the response
+    result = "# IB Gateway Status\n\n"
+    
+    if status["connected"]:
+        result += f"✅ **Connected** to IB Gateway/TWS at {status['host']}:{status['port']}\n\n"
+    else:
+        result += f"❌ **Not Connected** to IB Gateway/TWS at {status['host']}:{status['port']}\n\n"
+        result += f"Error: {status.get('error', 'Unknown error')}\n\n"
+        result += "Please make sure your IB Gateway or TWS is running and logged in.\n\n"
+    
+    result += """
+## Available Tools
+
+- **get_portfolio_tool**: Retrieve your current portfolio positions and account summary
+
+## Connection Parameters
+
+- Default Host: 127.0.0.1
+- Default Port: 4001 (TWS Paper: 7497, TWS Live: 7496)
+- Default Client ID: 100
+
+Make sure your IB Gateway or TWS is running and logged in before using these tools.
+"""
+    
+    return result
 
 if __name__ == "__main__":
     mcp.run()
