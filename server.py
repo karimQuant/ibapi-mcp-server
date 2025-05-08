@@ -42,7 +42,6 @@ def get_portfolio_tool() -> str:
         for position in sorted_positions:
             contract = position["contract"]
             result += f"### {contract['symbol']} ({contract['secType']})\n\n"
-            result += f"- Exchange: {contract['exchange']}\n"
             result += f"- Currency: {contract['currency']}\n"
             result += f"- Position: {position['pos']}\n"
             result += f"- Maturity (YYYMMDD): {contract['lastTradeDateOrContractMonth']}\n"
