@@ -1,6 +1,6 @@
 import os
 from fastmcp import FastMCP, Context
-from ibapi_functions import get_portfolio, check_gateway_connection
+from ibapi_mcp_server.ibapi_functions import get_portfolio, check_gateway_connection
 from dotenv import load_dotenv
 
 # Load environment variables
