@@ -27,7 +27,6 @@ class IBGatewayClient(EClient, EWrapper):
         """Callback for receiving errors from the API."""
         # The base EWrapper.error method does not accept advancedOrderDetails
         super().error(reqId, errorCode, errorString)
-        print(f"Error ID: {reqId}, Code: {errorCode}, String: {errorString}")
         self._error = (reqId, errorCode, errorString)
         # Set done events on critical errors like connection issues
         if errorCode in [1100, 1101, 1102]: # Connection errors
