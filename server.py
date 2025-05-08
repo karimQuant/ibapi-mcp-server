@@ -37,7 +37,9 @@ def get_portfolio_tool() -> str:
     # Positions
     result += "## Positions\n\n"
     if positions:
-        for position in positions:
+        # Sort positions by ticker symbol and then by maturity date
+        sorted_positions = sorted(positions, key=lambda p: (p['contract']['symbol'], p['contract'].get('lastTradeDateOrContractMonth', '')))
+        for position in sorted_positions:
             contract = position["contract"]
             result += f"### {contract['symbol']} ({contract['secType']})\n\n"
             result += f"- Exchange: {contract['exchange']}\n"
