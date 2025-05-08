@@ -194,8 +194,8 @@ def get_portfolio(host="127.0.0.1", port=4001, clientId=100):
     account_summary_req_id = 9001 # Choose a unique ID
     client.reqAccountSummary(account_summary_req_id, "All", "$LEDGER") # Request all accounts, $LEDGER tag
 
-    positions_req_id = 9002 # Choose another unique ID
-    client.reqPositions(positions_req_id) # Request positions for all accounts
+    # Positions request does not require a reqId
+    client.reqPositions() # Request positions for all accounts
 
     # Wait for both requests to complete or timeout
     wait_timeout = 30 # seconds
