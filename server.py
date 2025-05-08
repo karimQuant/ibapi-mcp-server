@@ -54,6 +54,40 @@ def get_portfolio_tool() -> str:
     
     return result
 
+@mcp.tool()
+def get_mid_price_tool(symbol: str) -> str:
+    """
+    Get the mid price for a given symbol from Interactive Brokers.
+    
+    Args:
+        symbol: The ticker symbol to get the price for (e.g., "AAPL", "MSFT")
+        
+    Returns:
+        A formatted string containing the mid price information
+    """
+    host = os.getenv("IB_GATEWAY_HOST", "127.0.0.1")
+    port = int(os.getenv("IB_GATEWAY_PORT", "4001"))
+    client_id = int(os.getenv("IB_GATEWAY_CLIENT_ID", "100"))
+    
+    from ibapi_mcp_server.ibapi_functions import get_mid_price
+    
+    result = get_mid_price(symbol, host, port, client_id)
+    
+    # Format the response
+    response = f"# Mid Price for {result['symbol']}\n\n"
+    
+    if "error" in result:
+        response += f"❌ **Error**: {result['error']}\n\n"
+        response += "Please make sure your IB Gateway or TWS is running and logged in, and that the symbol is valid.\n"
+    else:
+        response += f"## Price Information\n\n"
+        response += f"- **Mid Price**: {result['mid_price']}\n"
+        response += f"- **Bid Price**: {result['bid']}\n"
+        response += f"- **Ask Price**: {result['ask']}\n\n"
+        response += f"*Data retrieved from Interactive Brokers*\n"
+    
+    return response
+
 @mcp.resource("ibgateway://status")
 def get_gateway_status() -> str:
     """Get the current status of the IB Gateway connection using environment variables"""

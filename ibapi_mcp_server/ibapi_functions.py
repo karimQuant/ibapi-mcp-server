@@ -17,6 +17,9 @@ class IBGatewayClient(EClient, EWrapper):
         self._positions_done = threading.Event()
         self._connected = threading.Event()
         self._error = None
+        # Add these new attributes for market data
+        self.market_data = {}
+        self._market_data_done = threading.Event()
 
     def nextValidId(self, orderId):
         """Callback for receiving the next valid order ID."""
@@ -81,6 +84,24 @@ class IBGatewayClient(EClient, EWrapper):
         super().positionEnd()
         print("Position End")
         self._positions_done.set()
+
+    def tickPrice(self, reqId, tickType, price, attrib):
+        """Callback for receiving price tick data."""
+        super().tickPrice(reqId, tickType, price, attrib)
+        if reqId not in self.market_data:
+            self.market_data[reqId] = {}
+        
+        # Store bid and ask prices
+        # tickType 1 is bid price, tickType 2 is ask price
+        if tickType == 1:  # Bid
+            self.market_data[reqId]['bid'] = price
+        elif tickType == 2:  # Ask
+            self.market_data[reqId]['ask'] = price
+        
+        # If we have both bid and ask, we can calculate mid price
+        if 'bid' in self.market_data[reqId] and 'ask' in self.market_data[reqId]:
+            self.market_data[reqId]['mid'] = (self.market_data[reqId]['bid'] + self.market_data[reqId]['ask']) / 2
+            self._market_data_done.set()
 
 
 def check_gateway_connection(host="127.0.0.1", port=4001, clientId=999):
@@ -148,6 +169,88 @@ def check_gateway_connection(host="127.0.0.1", port=4001, clientId=999):
             "error": str(e),
             "host": host,
             "port": port
+        }
+
+def get_mid_price(symbol, host="127.0.0.1", port=4001, clientId=102):
+    """
+    Gets the mid price for a given symbol from IB API.
+    
+    Args:
+        symbol (str): The symbol to get the mid price for.
+        host (str): The host address of the IB Gateway/TWS.
+        port (int): The port of the IB Gateway/TWS.
+        clientId (int): The client ID to use for the connection.
+        
+    Returns:
+        dict: A dictionary containing:
+              - symbol (str): The requested symbol
+              - mid_price (float): The mid price (average of bid and ask)
+              - bid (float): The bid price
+              - ask (float): The ask price
+              - error (str, optional): Error message if request failed
+    """
+    import os
+    
+    # Use provided parameters or fall back to environment variables
+    host = host or os.getenv("IB_GATEWAY_HOST", "127.0.0.1")
+    port = port or int(os.getenv("IB_GATEWAY_PORT", "4001"))
+    clientId = clientId or int(os.getenv("IB_GATEWAY_CLIENT_ID", "102"))
+    
+    client = IBGatewayClient()
+    
+    try:
+        print(f"Connecting to {host}:{port} with client ID {clientId} to get mid price for {symbol}...")
+        client.connect(host, port, clientId)
+        
+        # Start the client in a separate thread
+        api_thread = threading.Thread(target=client.run)
+        api_thread.start()
+        
+        # Wait for connection to be established
+        if not client._connected.wait(timeout=10):
+            print("Connection timed out or failed.")
+            client.disconnect()
+            api_thread.join()
+            return {"symbol": symbol, "error": "Connection timed out or failed"}
+        
+        # Create a contract for the symbol
+        contract = Contract()
+        contract.symbol = symbol
+        contract.secType = "STK"  # Default to stock
+        contract.currency = "USD"  # Default to USD
+        contract.exchange = "SMART"  # Use SMART routing
+        
+        # Request market data
+        req_id = 1001  # Use a unique request ID
+        client.reqMktData(req_id, contract, "", False, False, [])
+        
+        # Wait for market data to be received
+        market_data_received = client._market_data_done.wait(timeout=10)
+        
+        # Cancel market data subscription
+        client.cancelMktData(req_id)
+        
+        # Disconnect
+        client.disconnect()
+        api_thread.join()
+        
+        if market_data_received and req_id in client.market_data:
+            data = client.market_data[req_id]
+            return {
+                "symbol": symbol,
+                "mid_price": data.get('mid'),
+                "bid": data.get('bid'),
+                "ask": data.get('ask')
+            }
+        else:
+            return {
+                "symbol": symbol,
+                "error": "Failed to receive market data"
+            }
+    except Exception as e:
+        return {
+            "symbol": symbol,
+            "error": str(e)
         }
 
 def get_portfolio(host="127.0.0.1", port=4001, clientId=100):
