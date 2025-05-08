@@ -47,7 +47,18 @@ python server.py
 
 ## API Documentation
 
-Details on the available endpoints and how to use them will be added soon.
+The MCP (Multi-Client Protocol) Server provides the following functionality:
+
+### Available Tools
+
+- **get_portfolio**: Retrieve your current portfolio positions and values
+- **get_trades**: Access your recent trade history and execution details
+- **get_instrument_price**: Get real-time or delayed pricing for financial instruments
+- **get_instrument_info**: Retrieve detailed information about specific financial instruments
+
+### Endpoints
+
+Details on how to use these endpoints will be added soon.
 
 ## License
 
