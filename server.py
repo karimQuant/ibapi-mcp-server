@@ -10,18 +10,17 @@ load_dotenv()
 mcp = FastMCP("IB Gateway MCP Server")
 
 @mcp.tool()
-def get_portfolio_tool(host: str = "127.0.0.1", port: int = 4001, client_id: int = 100) -> str:
+def get_portfolio_tool() -> str:
     """
-    Retrieve portfolio information from Interactive Brokers.
+    Retrieve portfolio information from Interactive Brokers using environment variables.
     
-    Args:
-        host: The host address of the IB Gateway/TWS (default: 127.0.0.1)
-        port: The port of the IB Gateway/TWS (default: 4001)
-        client_id: The client ID to use for the connection (default: 100)
-        
     Returns:
         A formatted string containing account summary and positions information
     """
+    host = os.getenv("IB_GATEWAY_HOST", "127.0.0.1")
+    port = int(os.getenv("IB_GATEWAY_PORT", "4001"))
+    client_id = int(os.getenv("IB_GATEWAY_CLIENT_ID", "100"))
+    
     account_summary, positions = get_portfolio(host, port, client_id)
     
     # Format the response
@@ -50,9 +49,13 @@ def get_portfolio_tool(host: str = "127.0.0.1", port: int = 4001, client_id: int
     
     return result
 
-@mcp.resource("ibgateway://{host}/{port}")
-def get_gateway_status(host: str = "127.0.0.1", port: int = 4001) -> str:
-    """Get the current status of the IB Gateway connection"""
+@mcp.resource("ibgateway://status")
+def get_gateway_status() -> str:
+    """Get the current status of the IB Gateway connection using environment variables"""
+    
+    # Get connection parameters from environment variables
+    host = os.getenv("IB_GATEWAY_HOST", "127.0.0.1")
+    port = int(os.getenv("IB_GATEWAY_PORT", "4001"))
     
     # Check if the gateway is connected
     status = check_gateway_connection(host, port)
@@ -72,11 +75,11 @@ def get_gateway_status(host: str = "127.0.0.1", port: int = 4001) -> str:
 
 - **get_portfolio_tool**: Retrieve your current portfolio positions and account summary
 
-## Connection Parameters
+## Connection Parameters (from environment variables)
 
-- Default Host: 127.0.0.1
-- Default Port: 4001 (TWS Paper: 7497, TWS Live: 7496)
-- Default Client ID: 100
+- Host: """ + os.getenv("IB_GATEWAY_HOST", "127.0.0.1") + """
+- Port: """ + os.getenv("IB_GATEWAY_PORT", "4001") + """ (TWS Paper: 7497, TWS Live: 7496)
+- Client ID: """ + os.getenv("IB_GATEWAY_CLIENT_ID", "100") + """
 
 Make sure your IB Gateway or TWS is running and logged in before using these tools.
 """

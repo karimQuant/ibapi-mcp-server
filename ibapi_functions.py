@@ -3,6 +3,7 @@ from ibapi.wrapper import EWrapper
 from ibapi.contract import Contract
 import threading
 import time
+import os
 
 class IBGatewayClient(EClient, EWrapper):
     """
@@ -97,6 +98,13 @@ def check_gateway_connection(host="127.0.0.1", port=4001, clientId=999):
               - message (str): A descriptive message about the connection status
               - error (str, optional): Error message if connection failed
     """
+    import os
+    
+    # Use provided parameters or fall back to environment variables
+    host = host or os.getenv("IB_GATEWAY_HOST", "127.0.0.1")
+    port = port or int(os.getenv("IB_GATEWAY_PORT", "4001"))
+    clientId = clientId or int(os.getenv("IB_GATEWAY_CLIENT_ID", "999"))
+    
     client = IBGatewayClient()
     
     try:
@@ -158,6 +166,13 @@ def get_portfolio(host="127.0.0.1", port=4001, clientId=100):
                - positions (list): A list of dictionaries, each representing a position.
                Returns empty dictionaries/lists on connection or data retrieval failure.
     """
+    import os
+    
+    # Use provided parameters or fall back to environment variables
+    host = host or os.getenv("IB_GATEWAY_HOST", "127.0.0.1")
+    port = port or int(os.getenv("IB_GATEWAY_PORT", "4001"))
+    clientId = clientId or int(os.getenv("IB_GATEWAY_CLIENT_ID", "100"))
+    
     client = IBGatewayClient()
 
     print(f"Connecting to {host}:{port} with client ID {clientId}...")
