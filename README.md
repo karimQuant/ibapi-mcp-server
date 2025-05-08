@@ -47,7 +47,7 @@ python server.py
 
 ## API Documentation
 
-The MCP (Multi-Client Protocol) Server provides the following functionality:
+The MCP (Model Context Protocol) Server provides the following functionality:
 
 ### Available Tools
 
