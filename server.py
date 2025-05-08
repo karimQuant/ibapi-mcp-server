@@ -79,4 +79,23 @@ Make sure your IB Gateway or TWS is running and logged in before using these too
     return result
 
 if __name__ == "__main__":
-    mcp.run()
+    import sys
+    
+    # Check if "sse" is in command line arguments
+    if len(sys.argv) > 1 and "sse" in sys.argv:
+        # Run with SSE transport on default port 8000
+        port = 8000
+        # Check if a port is specified (format: "port=XXXX")
+        for arg in sys.argv:
+            if arg.startswith("port="):
+                try:
+                    port = int(arg.split("=")[1])
+                except (ValueError, IndexError):
+                    print(f"Invalid port format: {arg}. Using default port 8000.")
+        
+        print(f"Starting server with SSE transport on port {port}...")
+        mcp.run(transport="sse", port=port)
+    else:
+        # Default: run with stdio transport
+        print("Starting server with stdio transport...")
+        mcp.run()

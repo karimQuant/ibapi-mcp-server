@@ -36,15 +36,32 @@ pip install -e .
 ## Usage
 
 1. Start your IB Gateway and log in
-2. Run the server using the FastMCP CLI:
-```
-fastmcp run server.py
-```
+2. Run the server:
 
-For development with an interactive testing environment:
-```
-fastmcp dev server.py
-```
+   a. Using stdio transport (default):
+   ```
+   python server.py
+   ```
+   
+   b. Using SSE transport:
+   ```
+   python server.py sse
+   ```
+   
+   c. Using SSE transport with custom port:
+   ```
+   python server.py sse port=9000
+   ```
+
+   d. Using the FastMCP CLI:
+   ```
+   fastmcp run server.py
+   ```
+
+   e. For development with an interactive testing environment:
+   ```
+   fastmcp dev server.py
+   ```
 
 3. Connect client applications (like Claude Desktop) to the server
 
